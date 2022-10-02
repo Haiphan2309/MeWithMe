@@ -17,8 +17,16 @@ public class BlockWithFairy : MonoBehaviour
         
     }
 
+    bool isQuitting = false;
+    void OnApplicationQuit()
+    {
+        isQuitting = true;
+    }
     private void OnDestroy()
     {
-        fairy.SetActive(true);
+        if (!isQuitting)
+        {
+            fairy.SetActive(true);
+        }
     }
 }

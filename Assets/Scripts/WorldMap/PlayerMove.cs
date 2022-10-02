@@ -20,6 +20,8 @@ public class PlayerMove : MonoBehaviour //tac dung nhu mot cai gamecontroller
 
     public AudioClip pressButtonClip, stretchClip, shrinkClip;
     AudioSource music;
+
+    public Transform moveBtnTrans;
     private void Awake()
     {
         music = gameObject.GetComponent<AudioSource>();
@@ -36,15 +38,16 @@ public class PlayerMove : MonoBehaviour //tac dung nhu mot cai gamecontroller
             levelTarget = GameData.currentLevel;
         }
         else speed = speed / 3;
+
+        Save();
     }
 
     // Update is called once per frame
     void Update()
     {
-        xdir = Input.GetAxisRaw("Horizontal");
-        ydir = Input.GetAxisRaw("Vertical");
-        //if (level == 0) isCanMove = false; // ko can thiet
-        //else isCanMove = true;
+        //xdir = Input.GetAxisRaw("Horizontal");
+        //ydir = Input.GetAxisRaw("Vertical");
+
         CanPlaySound();
         if (isCanMove)
         {
@@ -59,7 +62,7 @@ public class PlayerMove : MonoBehaviour //tac dung nhu mot cai gamecontroller
                     else if (level == 4) levelTarget = 5;
                     else if (level == 5) levelTarget = 7;
                     else if (level == 6) levelTarget = 7;
-                    else if (level == 7) levelTarget = 8;
+                    else if (level == 7 && GameData.numOfFairy()>=5) levelTarget = 8;
                 }
                 //anim.Play("MoveRight");
             }
@@ -118,6 +121,44 @@ public class PlayerMove : MonoBehaviour //tac dung nhu mot cai gamecontroller
         MoveToLevelPanel(levelTarget);
     }
 
+    //------------------------------------------------------------Button Only
+    Vector3 mousePos;
+    public void MoveBtnDown()
+    {
+        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z += 10;
+        if (mousePos.x - moveBtnTrans.position.x < 2.5f)
+        {
+            if (mousePos.x - moveBtnTrans.position.x > 0.5f)
+            {
+                xdir = 1;
+            }
+            else if (mousePos.x - moveBtnTrans.position.x < -0.5f)
+            {
+                xdir = -1;
+            }
+            else xdir = 0;
+            if (mousePos.y - moveBtnTrans.position.y < -0.5f) ydir = -1;
+            else if (mousePos.y - moveBtnTrans.position.y > 0.5f) ydir = 1;
+            else ydir = 0;
+        }
+    }
+    public void PlaySound()
+    {
+        music.clip = pressButtonClip;
+        music.Play();
+    }
+    public void MoveBtnUp()
+    {
+        xdir = 0;
+        ydir = 0;
+    }
+    public void ChooseBtn()
+    {
+        if (level != 0 && isCanMove) EnterLevel();
+    }
+    //------------------------------------------------------------------
+
     void CanPlaySound()
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D)
@@ -174,6 +215,14 @@ public class PlayerMove : MonoBehaviour //tac dung nhu mot cai gamecontroller
         music.Play();
         exitBtnAnim.SetBool("isHover", false);
     }
+
+    void Save()
+    {
+        print("Save");
+        SaveSystem.SaveData();
+    }
+
+    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

@@ -16,6 +16,8 @@ public class MenuStartController : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
+
         music = gameObject.GetComponent<AudioSource>();
         //blackSceneAnim = blackScene.GetComponent<Animator>();
         startBtnAnim = startBtn.GetComponent<Animator>();
@@ -27,19 +29,14 @@ public class MenuStartController : MonoBehaviour
     {
         //blackSceneAnim.Play("BlackSceneBegin");
         Time.timeScale = 1;
+        Load();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        //if (Input.GetMouseButtonDown(0)) //Hieu ung khi click chuot
-        //{
-        //    music.Play();
-        //    Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    mousePos.z += 10;
-        //    Instantiate(clickEffect, mousePos, Quaternion.identity);
-        //}
-    }
+    //void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.R)) EraseData(); //de erase data luc moi vao
+    //}
     public void onHoverStartBtn()
     {
         music.clip = stretchClip;
@@ -95,11 +92,45 @@ public class MenuStartController : MonoBehaviour
 
     void LoadGameScene()
     {
-        SceneManager.LoadScene(2);
+        if (GameData.currentLevel == 0)
+            SceneManager.LoadScene(2);
+        else SceneManager.LoadScene(1);
     }
 
-    void LoadTimeModeScene()
+    void EraseData()
     {
-        SceneManager.LoadScene(2);
+        GameData data = SaveSystem.LoadData();
+        if (data != null)
+        {
+            print("EraseData");
+            GameData.currentLevel = 0;
+            for (int i = 0; i < GameData.NUM_LEVEL; i++)
+            {
+                GameData.isCompleteLevel[i] = false;
+                GameData.isGetFairy[i] = false;
+            }
+        }
+        Save();
+    }
+
+    void Save()
+    {
+        print("Save");
+        SaveSystem.SaveData();
+    }
+    void Load()
+    {
+        GameData data = SaveSystem.LoadData();
+        if (data != null)
+        {
+            print("Data not null");
+            GameData.currentLevel = data.currentLevelData;
+            for (int i = 0; i < GameData.NUM_LEVEL; i++)
+            {
+                GameData.isCompleteLevel[i] = data.isCompleteLevelData[i];
+                GameData.isGetFairy[i] = data.isGetFairyData[i];
+            }
+        }
+        print("Load Current Level:" + GameData.currentLevel);
     }
 }

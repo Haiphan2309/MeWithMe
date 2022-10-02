@@ -11,6 +11,8 @@ public class Block : MonoBehaviour
 
     public ParticleSystem vfx_BlockBroken;
 
+    //bool isQuitting = false;
+
     private void Awake()
     {
         sprRen = gameObject.GetComponent<SpriteRenderer>();
@@ -30,7 +32,11 @@ public class Block : MonoBehaviour
 
     void ChangeSprite()
     {
-        if (hp <= 0) Destroy(gameObject);
+        if (hp <= 0)
+        {
+            Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+        }
         else if (hp <= 1) sprRen.sprite = sprite1;
         else if (hp <= 2) sprRen.sprite = sprite2;
         else if (hp <= 3) sprRen.sprite = sprite3;
@@ -79,9 +85,13 @@ public class Block : MonoBehaviour
             anim.Play("Hit");
         }
     }
-
-    private void OnDestroy()
-    {
-        Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
-    }
+    //void OnApplicationQuit()
+    //{
+    //    isQuitting = true;
+    //}
+    //private void OnDestroy()
+    //{
+    //    if (!isQuitting)
+    //        Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
+    //}
 }

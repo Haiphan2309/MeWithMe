@@ -39,8 +39,11 @@ public class PlantHead : Enemy
     }
     public bool isPlayerNear()
     {
-        if (Vector3.Magnitude(transform.position - player.transform.position) <= distanceDetect) return true;
-        else return false;
+        if (player != null)
+        {
+            if (Vector3.Magnitude(transform.position - player.transform.position) <= distanceDetect) return true;
+        }
+        return false;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

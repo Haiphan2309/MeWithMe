@@ -17,8 +17,8 @@ public class LevelIcon : MonoBehaviour
     void Start()
     {
         if (GameData.isCompleteLevel[id]) sprRen.sprite = winSprite;
-        if (GameData.isGetFairy[id]) fairy.SetActive(true);
-        else cage.SetActive(true);
+        if (GameData.isGetFairy[id] && fairy != null) fairy.SetActive(true);
+        else if (cage!=null) cage.SetActive(true);
     }
 
     // Update is called once per frame

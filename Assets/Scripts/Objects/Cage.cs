@@ -10,14 +10,17 @@ public class Cage : MonoBehaviour
 
     private void Awake()
     {
-        gameControllerScr = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+        if (GameObject.FindGameObjectWithTag("GameController")!= null)
+            gameControllerScr = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Attack") || collision.CompareTag("SmallAttack"))
         {
-            Destroy(gameObject);
+            Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
+            gameControllerScr.isGetFairy = true;
+            fairy.SetActive(true);
         }
     }
 
@@ -25,14 +28,25 @@ public class Cage : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Attack") || collision.gameObject.CompareTag("SmallAttack"))
         {
+            Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
+            gameControllerScr.isGetFairy = true;
+            fairy.SetActive(true);
             Destroy(gameObject);
         }
     }
 
-    private void OnDestroy()
-    {
-        Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
-        gameControllerScr.isGetFairy = true;
-        fairy.SetActive(true);
-    }
+    //bool isQuitting = false;
+    //void OnApplicationQuit()
+    //{
+    //    isQuitting = true;
+    //}
+    //private void OnDestroy()
+    //{
+    //    if (!isQuitting && GameObject.FindGameObjectWithTag("GameController") != null)
+    //    {
+    //        Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
+    //        gameControllerScr.isGetFairy = true;
+    //        fairy.SetActive(true);
+    //    }
+    //}
 }

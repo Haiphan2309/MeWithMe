@@ -16,6 +16,9 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+
         Time.timeScale = 1;
         isGameOver = false;
         isGetFairy = GameData.isGetFairy[GameData.currentLevel];
@@ -23,23 +26,22 @@ public class GameController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        //if (Input.GetKeyDown(KeyCode.I))
-        //{
-        //    print("isCompleteLevel " + GameData.currentLevel + " :" + GameData.isCompleteLevel[GameData.currentLevel]);
-        //    print("isGetFairy " + GameData.currentLevel + " :" + GameData.isGetFairy[GameData.currentLevel]);
-        //}
-        //if (Input.GetKeyDown(KeyCode.K)) ToWorldMap(1);
-        //if (Input.GetKeyDown(KeyCode.J)) isGetFairy = true;
-    }
+    //void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.I))
+    //    {
+    //        print("isCompleteLevel " + GameData.currentLevel + " :" + GameData.isCompleteLevel[GameData.currentLevel]);
+    //        print("isGetFairy " + GameData.currentLevel + " :" + GameData.isGetFairy[GameData.currentLevel]);
+    //    }
+    //    if (Input.GetKeyDown(KeyCode.K)) ToWorldMap(1);
+    //    if (Input.GetKeyDown(KeyCode.J)) isGetFairy = true;
+    //}
 
     public void GameOver()
     {
         if (isGameOver == false)
         {
             isGameOver = true;
-            print("GameOver");
             ToWorldMap(0);
             
         }
@@ -52,6 +54,12 @@ public class GameController : MonoBehaviour
         panelStageClear.SetActive(true);
         StartCoroutine(DoBlackSceneAnim(2));
         StartCoroutine(LoadMenuScene(3));
+    }
+
+    public void BackButtonToMenu()
+    {
+        StartCoroutine(DoBlackSceneAnim(0));
+        StartCoroutine(LoadMenuScene(1));
     }
     IEnumerator LoadMenuScene(float sec)
     {
@@ -88,6 +96,19 @@ public class GameController : MonoBehaviour
             //StartCoroutine(DoBlackSceneAnim(1));
             //StartCoroutine(LoadCurrentScene(2));
         }
+    }
+
+    public void LoadEndingScene()
+    {
+        GameData.isCompleteLevel[GameData.currentLevel] = true;
+        StartCoroutine(DoBlackSceneAnim(1));
+        StartCoroutine(LoadEndingScene(2));
+    }
+
+    IEnumerator LoadEndingScene(float sec)
+    {
+        yield return new WaitForSecondsRealtime(sec);
+        SceneManager.LoadScene(11);
     }
 
     IEnumerator DoBlackSceneAnim(float sec)

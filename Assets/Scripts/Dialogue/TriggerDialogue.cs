@@ -15,9 +15,10 @@ public class TriggerDialogue : MonoBehaviour
     float sec;
     public bool isTalking = false;
     public bool isEndDialogue;
+    bool isEndFirstTime = false;
 
     public Animator panelAnim;
-    public GameObject whitePlayer, blackPlayer;
+    public GameObject whitePlayer, blackPlayer, transparentPauseButton;
 
     AudioSource music;
 
@@ -34,7 +35,7 @@ public class TriggerDialogue : MonoBehaviour
         //    sentences.Enqueue(sentence);
         //}
 
-        //sec = 0.1f;
+        sec = 0.1f;
         //isEndDialogue = false;
 
         panelAnim.Play("Start");
@@ -44,7 +45,7 @@ public class TriggerDialogue : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isTalking == false)
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && isTalking == false)
         {
             if (sentences.Count == 0 && isEndDialogue == false)
             {
@@ -56,8 +57,9 @@ public class TriggerDialogue : MonoBehaviour
                 cameraScr.isFollow2Player = true;
                 cameraScr.minY = -10;
                 cameraScr.maxX = 105;
-                print(cameraScr.minY);
                 print("End Dialogue");
+                Time.timeScale = 1;
+                transparentPauseButton.SetActive(false);
             }
             else if (sentences.Count != 0)
             {
@@ -65,18 +67,24 @@ public class TriggerDialogue : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && isEndDialogue == false) music.Play();
-        if (Input.GetKey(KeyCode.Space))
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && isEndDialogue == false)
+        {
+            music.Play();
+            sec = 0.01f;
+        }
+        if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
         {
             sec = 0.01f;
         }
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
         {
             sec = 0.05f;
         }
-        if (isEndDialogue && Time.timeScale == 0 && isTalking == false)
+        if (isEndDialogue && Time.timeScale == 0 && isTalking == false && isEndDialogue == false)
         {
+            isEndFirstTime = true;
             Time.timeScale = 1;
+            transparentPauseButton.SetActive(false);
         }
     }
 
@@ -89,7 +97,7 @@ public class TriggerDialogue : MonoBehaviour
             sentences.Enqueue(sentence);
         }
 
-        sec = 0.1f;
+        //sec = 0.1f;
         isEndDialogue = false;
         DisplayDialogue();
     }
@@ -111,6 +119,9 @@ public class TriggerDialogue : MonoBehaviour
     void DisplayDialogue()
     {
         str = sentences.Dequeue();
+
+        sentenceText.text = str;
+        
         StopAllCoroutines();
         StartCoroutine(TypeSentence(str));
     }
@@ -124,6 +135,7 @@ public class TriggerDialogue : MonoBehaviour
             sentenceText.text += letter;
             yield return new WaitForSecondsRealtime(sec);
         }
+        //yield return new WaitForSecondsRealtime(0.5f);
         isTalking = false;
     }
 }

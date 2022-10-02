@@ -73,6 +73,25 @@ public class Body : MonoBehaviour
 
     }
 
+    //------------------------------------------------------ Button Only
+    public void StretchBtnDown()
+    {
+        if (isDoneShrink)
+        {
+            isStretch = true;
+            isDoneShrink = false;
+        }
+    }
+    public void StretchBtnUp()
+    {
+        if (isStretch == true)
+        {
+            xSizeStretch = transform.localScale.x;
+
+            isStretch = false;
+        }
+    }
+    //-----------------------------------------------------------
     public void DoLandAnim()
     {
         StartCoroutine(LandAnim());

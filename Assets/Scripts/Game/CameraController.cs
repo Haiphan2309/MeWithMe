@@ -10,10 +10,9 @@ public class CameraController : MonoBehaviour
     public float moveSpeed, sizeSpeed;
 
     const float slideDistance = 20;
-    public bool isFollow2Player;
-
     public float minSize = 6;
-
+    public float switeMovePos; // do dich chuyen khi vuot man hinh
+    public bool isFollow2Player, isSwipeMap;
     public bool isScoll;
     //bool isScoll = false;
 
@@ -76,20 +75,24 @@ public class CameraController : MonoBehaviour
 
     void FollowTarget()
     {
-        if (isFollow2Player == false)
-        {
-            if (whitePlayer != null)
-            {
-                target.x = whitePlayer.position.x;
-                target.y = whitePlayer.position.y;
-            }
-        }
+        if (isSwipeMap) target.x = gameObject.transform.position.x + switeMovePos;
         else
         {
-            if (whitePlayer != null && blackPlayer != null)
+            if (isFollow2Player == false)
             {
-                target.x = (whitePlayer.position.x + blackPlayer.transform.position.x) / 2;
-                target.y = (whitePlayer.position.y + blackPlayer.transform.position.y) / 2;
+                if (whitePlayer != null)
+                {
+                    target.x = whitePlayer.position.x;
+                    target.y = whitePlayer.position.y;
+                }
+            }
+            else
+            {
+                if (whitePlayer != null && blackPlayer != null)
+                {
+                    target.x = (whitePlayer.position.x + blackPlayer.transform.position.x) / 2;
+                    target.y = (whitePlayer.position.y + blackPlayer.transform.position.y) / 2;
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ public class TrueKaslime : Enemy
 
     bool isEnd;
 
-    public GameObject afterImage, whiteScene;
+    public GameObject afterImage, whiteScene, credit;
 
     public AudioClip chargeClip;
     AudioSource music;
@@ -174,6 +174,6 @@ public class TrueKaslime : Enemy
 
     private void OnDestroy()
     {
-        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().ToWorldMap(1);
+        credit.SetActive(true);
     }
 }

@@ -31,6 +31,9 @@ public class Player : MonoBehaviour
 
     public AudioClip JumpClip;
     AudioSource music;
+
+    bool isHoldJumpBtn = false;
+    public Transform moveBtnTrans;
     private void Awake()
     {
         music = gameObject.GetComponent<AudioSource>();
@@ -53,15 +56,15 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isReverseX)
-        {
-            xdir = -Input.GetAxisRaw("Horizontal");
-        }
-        else
-        {
-            xdir = Input.GetAxisRaw("Horizontal");
-        }
-        ydir = Input.GetAxisRaw("Vertical");
+        //if (isReverseX)
+        //{
+        //    xdir = -Input.GetAxisRaw("Horizontal");
+        //}
+        //else
+        //{
+        //    xdir = Input.GetAxisRaw("Horizontal");
+        //}
+        //ydir = Input.GetAxisRaw("Vertical");
 
         xSpeed = rb.velocity.x;
         ySpeed = rb.velocity.y;
@@ -131,13 +134,110 @@ public class Player : MonoBehaviour
                 timeJump -= Time.fixedDeltaTime;
         }
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) || isHoldJumpBtn == true)
         {
             Jump();
         }
 
         if (isCanMove) Move();
     }
+
+    //------------------------------------------------------------------------------------------------ Button Only
+    Vector3 touchPos;
+    bool isFirstTouch = false, isSecondTouch = false;
+
+    public void MoveBtnDown()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch;
+            if (Input.touchCount == 1)
+            {
+                isFirstTouch = true;
+                touch = Input.GetTouch(0);
+            }
+            else if (Input.touchCount == 2)
+            {
+                if (isFirstTouch == true) touch = Input.GetTouch(0);
+                else
+                {
+                    isSecondTouch = true;
+                    touch = Input.GetTouch(1);
+                }
+            }
+            else
+            {
+                if (isFirstTouch == true) touch = Input.GetTouch(0);
+                else if (isSecondTouch == true) touch = Input.GetTouch(1);
+                else touch = Input.GetTouch(2);
+            }
+            touchPos = Camera.main.ScreenToWorldPoint(touch.position);
+
+            if (touchPos.x - moveBtnTrans.position.x > 0.5f)
+            {
+                if (isReverseX)
+                {
+                    xdir = -1;
+                }
+                else
+                {
+                    xdir = 1;
+                }
+            }
+            else if (touchPos.x - moveBtnTrans.position.x < -0.5f)
+            {
+                if (isReverseX)
+                {
+                    xdir = 1;
+                }
+                else
+                {
+                    xdir = -1;
+                }
+            }
+            else xdir = 0;
+            if (touchPos.y - moveBtnTrans.position.y < -1) ydir = -1;
+            else ydir = 0;
+        }
+    }
+    public void MoveBtnUp()
+    {
+        isFirstTouch = false;
+        isSecondTouch = false;
+        xdir = 0;
+        ydir = 0;
+    }
+
+    public void JumpBtnDown()
+    {
+        if (gameObject.activeSelf == false) return;
+        if (isOnWaterSurface)
+        {
+            music.clip = JumpClip;
+            music.Play();
+            timeJump = timeJumpMax * 0.75f;
+        }
+        if (isGround())
+        {
+            music.clip = JumpClip;
+            music.Play();
+            timeJump = timeJumpMax;
+        }
+
+        isHoldJumpBtn = true;
+    }
+
+    public void JumpBtnUp()
+    {
+        isHoldJumpBtn = false;
+    }
+
+    public void AttackBtn()
+    {
+        if (isAttacking == false) Attack();
+    }
+    //---------------------------------------------------------------------------------------------
+
 
     void FixStuckWalking()
     {
@@ -149,6 +249,7 @@ public class Player : MonoBehaviour
     }
     void Move()
     {
+        if (gameObject.activeSelf == false) return;
         if (isLying || bodyScr.isStretch)
         {
             rb.AddForce(new Vector3(xdir, 0, 0) * speed/1.7f);
@@ -161,6 +262,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+        if (gameObject.activeSelf == false) return;
         if (timeJump > 0)
         {
             if (isLying == false)
@@ -172,6 +274,8 @@ public class Player : MonoBehaviour
 
     void Attack()
     {
+        if (gameObject.activeSelf == false) return;
+
         int reverseVar;
         if (isReverseY) reverseVar = -1;
         else reverseVar = 1;
@@ -214,8 +318,15 @@ public class Player : MonoBehaviour
 
         if (hp<=0)
         {
-            Destroy(gameObject, 0.5f);
+            StartCoroutine(IShowDieVfx(0.5f));
         }
+    }
+
+    IEnumerator IShowDieVfx(float sec)
+    {
+        yield return new WaitForSecondsRealtime(sec);
+        Instantiate(vfx_Die, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     void EndBlinking()
@@ -316,8 +427,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        Instantiate(vfx_Die, transform.position, Quaternion.identity);
-    }
+    //bool isQuitting = false;
+    //void OnApplicationQuit()
+    //{
+    //    isQuitting = true;
+    //}
+    //private void OnDestroy()
+    //{
+    //    if (!isQuitting)
+    //        Instantiate(vfx_Die, transform.position, Quaternion.identity);
+    //}
 }

@@ -56,8 +56,14 @@ public class BigBlock : MonoBehaviour
         }
     }
 
+    bool isQuitting = false;
+    void OnApplicationQuit()
+    {
+        isQuitting = true;
+    }
     private void OnDestroy()
     {
-        Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
+        if (!isQuitting)
+            Instantiate(vfx_BlockBroken, transform.position, Quaternion.identity);
     }
 }
