@@ -10,6 +10,6 @@ Theo cốt truyện game thì ban đầu chỉ có Light World, nhưng do có m�
 
 ## Link
 
-- [ ] [Steam]([https://youtu.be/N9dM9c5q40M](https://store.steampowered.com/app/2181710/Me_With_Me/))
+- [ ] [Steam](https://store.steampowered.com/app/2181710/Me_With_Me/)
 - [ ] [Video demo](https://youtu.be/dgDBD3_rW-w)
 
